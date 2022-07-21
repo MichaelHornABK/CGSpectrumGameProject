@@ -1,81 +1,78 @@
 #include <iostream>
 #include "Player.h"
+#include "Enemy.h"
+#include <stdlib.h>
 using std::cout;
 using std::cin;
 using std::string;
 using std::endl;
 
+void Round(Player* player, Enemy* enemy);
+void Encounter(Player* player, Enemy* enemy);
+void PlayGame();
+
 int main()
 {
-    string playerName;
+    PlayGame();
+}
+
+void Round(Player* player, Enemy* enemy)
+{
+    enemy->TakeDamage((rand() % 6) + 5);
+    player->TakeDamage((rand() % 4) + 4);
+    player->DisplayPlayerHealth();
+    enemy->DisplayEnemyHealth();
+}
+
+void Encounter(Player* player, Enemy* enemy)
+{
+    for (int i = 0; i < 5; i++)
+    {
+        Round(player, enemy);
+    }
+
+    int rest;
     do
     {
-        cout << "Hello Player, what is your name? ";
-        cin >> playerName;
+        cout << "Would you like to rest for a short while? (HP regen) " << endl;
+        cout << "1. Yes" << endl;
+        cout << "2. No" << endl;
+        cin >> rest;
 
-        if (cin.fail()) {
+        if (cin.fail())
+        {
             cin.clear();
             cin.ignore(99, '\n');
             system("cls");
             cout << "That is not a valid input!" << endl;
         }
-        else {
+        else if (rest > 2 || rest <= 0)
+        {
+            system("cls");
+            cout << "This number is not valid for resting." << endl;
+        }
+        else
+        {
             break;
         }
     } while (true);
+    if (rest == 1)
+    {
+        player->Rest(20, 100);
+    }
+}
 
-    int playerWeapon;
+void PlayGame()
+{
+    Player player;
+    player.DisplayPlayerDetails();
+
     do
     {
-        cout << playerName << ", what weapon do you choose? " << endl;
-        cout << "1. Bow" << endl;
-        cout << "2. Sword" << endl;
-        cout << "3. Axe" << endl;
-        cout << "Please enter the number of the desired weapon ";
-        cin >> playerWeapon;
+        Enemy enemy;
+        enemy.DisplayEnemyDetails();
 
-        if (cin.fail()) {
-            cin.clear();
-            cin.ignore(99, '\n');
-            system("cls");
-            cout << "That is not a valid input!" << endl;
-        }
-        else if (playerWeapon > 3 || playerWeapon <= 0) {
-            system("cls");
-            cout << "This number is not valid for a weapon." << endl;
-        }
-        else {
-            break;
-        }
-    } while (true);
+        Encounter(&player, &enemy);
 
-    int playerArmor;
-    do
-    {
-        cout << playerName << ", what armor do you want?" << endl;
-        cout << "1. Light Armor" << endl;
-        cout << "2. Medium Armor" << endl;
-        cout << "3. Heavy Armor" << endl;
-        cout << "Please enter the number of the desired armor ";
-        cin >> playerArmor;
-
-        if (cin.fail()) {
-            cin.clear();
-            cin.ignore(99, '\n');
-            system("cls");
-            cout << "That is not a valid input!" << endl;
-        }
-        else if (playerWeapon > 3 || playerWeapon <= 0) {
-            system("cls");
-            cout << "This number is not valid for armor." << endl;
-        }
-        else {
-            break;
-        }
-    } while (true);
-
-
-    Player player(100, playerName, playerWeapon, playerArmor);
-    player.displayPlayerDetails(player);
-
+    } while (player.GetHealth() > 0);
 }
